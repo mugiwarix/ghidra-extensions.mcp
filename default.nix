@@ -5,6 +5,9 @@
   maven,
   ghidra,
   stdenv,
+  python3,
+  makeWrapper,
+  fetchPypi,
 }:
 
 buildGhidraExtension (
@@ -71,11 +74,19 @@ buildGhidraExtension (
       outputHashMode = "recursive";
       outputHash = "sha256-bcMbLrxvUszD8A16PJMTbo91emX3r7q+UqVZxwQpk+M=";
     };
+
+    pythonEnv = python3.withPackages (ps: [
+      ps.mcp
+      ps.requests
+    ]);
   in
   {
     inherit pname version src;
 
-    nativeBuildInputs = [ maven ];
+    nativeBuildInputs = [
+      maven
+      makeWrapper
+    ];
 
     preBuild = ''
       ${copyGhidraJars}
@@ -98,7 +109,9 @@ buildGhidraExtension (
         exit 1
       fi
       unzip -d $out/lib/ghidra/Ghidra/Extensions "$zipFile"
-      install -Dm755 ${src}/bridge_mcp_ghidra.py $out/bin/bridge_mcp_ghidra.py
+      install -Dm644 ${src}/bridge_mcp_ghidra.py $out/share/ghidra-mcp/bridge_mcp_ghidra.py
+      makeWrapper ${pythonEnv}/bin/python $out/bin/bridge_mcp_ghidra \
+        --add-flags "$out/share/ghidra-mcp/bridge_mcp_ghidra.py"
       runHook postInstall
     '';
 
