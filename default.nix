@@ -9,7 +9,7 @@
 
 buildGhidraExtension (
   let
-  pname = "mcp";
+    pname = "mcp";
     version = "1.4";
 
     src = fetchFromGitHub {
@@ -98,6 +98,7 @@ buildGhidraExtension (
         exit 1
       fi
       unzip -d $out/lib/ghidra/Ghidra/Extensions "$zipFile"
+      install -Dm755 ${src}/bridge_mcp_ghidra.py $out/bin/bridge_mcp_ghidra.py
       runHook postInstall
     '';
 
