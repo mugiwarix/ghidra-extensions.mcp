@@ -9,7 +9,7 @@
 
 buildGhidraExtension (
   let
-    pname = "ghidra-mcp";
+  pname = "mcp";
     version = "1.4";
 
     src = fetchFromGitHub {
