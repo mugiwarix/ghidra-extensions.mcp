@@ -55,7 +55,7 @@ buildGhidraExtension (
         runHook preBuild
         mkdir -p "$out/.m2"
         ${copyGhidraJars}
-        mvn -Dmaven.repo.local="$out/.m2" -DskipTests clean package assembly:single
+        mvn -Dmaven.repo.local="$out/.m2" -DskipTests clean package
         runHook postBuild
       '';
 
@@ -63,6 +63,7 @@ buildGhidraExtension (
         runHook preInstall
         find "$out" -type f \( \
           -name \*.lastUpdated \
+          -o -name maven-metadata\*.xml\* \
           -o -name resolver-status.properties \
           -o -name _remote.repositories \) \
           -delete
@@ -72,7 +73,7 @@ buildGhidraExtension (
       dontFixup = true;
       outputHashAlgo = "sha256";
       outputHashMode = "recursive";
-      outputHash = "sha256-bcMbLrxvUszD8A16PJMTbo91emX3r7q+UqVZxwQpk+M=";
+      outputHash = "sha256-W1TEGAH3FG3WLRpyKZY9y0H2xFxNxDa5KbGrdt6At8A=";
     };
 
     pythonEnv = python3.withPackages (ps: [
@@ -96,7 +97,7 @@ buildGhidraExtension (
       runHook preBuild
       cp -r "${mavenDeps}/.m2" "$TMPDIR/m2"
       chmod -R u+w "$TMPDIR/m2"
-      mvn -o -Dmaven.repo.local=$TMPDIR/m2 -DskipTests clean package assembly:single
+      mvn -o -Dmaven.repo.local="$TMPDIR/m2" -DskipTests clean package
       runHook postBuild
     '';
 
